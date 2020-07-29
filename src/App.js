@@ -1,26 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
+import {css, StyleSheet} from "aphrodite";
 import './App.css';
 
+const GRIDSIZE = 15;
+
 function App() {
+  const [cells, setCells] = useState([...Array(GRIDSIZE*GRIDSIZE)].map((x, i) => ''));
+  const [highlightIndex, setHighlightIndex] = useState(0);
+  const updater = (row, col) => {
+    setHighlightIndex(row * GRIDSIZE + col);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {[...Array(GRIDSIZE)].map((_, i) => <Row data={cells.slice(GRIDSIZE*i, GRIDSIZE*i + GRIDSIZE)} highlightedCell={Math.floor(highlightIndex / GRIDSIZE) === i ? highlightIndex % GRIDSIZE : -1} onClick={updater.bind(null, i)} key={i} />)}
     </div>
   );
 }
 
 export default App;
+
+function Row({data, highlightedCell, onClick}) {
+  return (
+    <div className={css(styles.row)}>
+      {data.map((cellData, i) => <Cell data={cellData} highlighted={highlightedCell === i} onClick={onClick.bind(null, i)} key={i}/>)}
+    </div>
+  );
+}
+
+function Cell({data, highlighted, onClick}) {
+  return (
+    <div className={css(styles.cell, highlighted && styles.highlighted)} onClick={onClick}>{data}</div>
+  );
+}
+
+const styles = StyleSheet.create({
+  row: {
+    display: 'flex',
+  },
+  cell: {
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'grey',
+    height: 30,
+    width: 30,
+  },
+  highlighted: {
+    backgroundColor: 'lightblue',
+  },
+  cellInput: {
+    border: 'none',
+    width: 28,
+    textTransform: 'uppercase',
+  }
+});
