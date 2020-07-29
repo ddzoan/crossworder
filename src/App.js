@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {css, StyleSheet} from "aphrodite";
 import './App.css';
 
@@ -7,6 +7,32 @@ const GRIDSIZE = 15;
 function App() {
   const [cells, setCells] = useState([...Array(GRIDSIZE*GRIDSIZE)].map((x, i) => ''));
   const [highlightIndex, setHighlightIndex] = useState(0);
+  useEffect(() => {
+    const handleKeydown = event => {
+      switch(event.key) {
+        case "ArrowUp":
+          if(Math.floor(highlightIndex / GRIDSIZE) > 0)
+            setHighlightIndex(highlightIndex - GRIDSIZE);
+          break;
+        case "ArrowDown":
+          if(Math.floor(highlightIndex / GRIDSIZE) < GRIDSIZE - 1)
+            setHighlightIndex(highlightIndex + GRIDSIZE);
+          break;
+        case "ArrowLeft":
+          if(highlightIndex % GRIDSIZE > 0)
+            setHighlightIndex(highlightIndex - 1);
+          break;
+        case "ArrowRight":
+          if(highlightIndex % GRIDSIZE < GRIDSIZE - 1)
+            setHighlightIndex(highlightIndex + 1);
+          break;
+        default:
+          break;
+      }
+    };
+    window.addEventListener('keydown', handleKeydown);
+    return () => window.removeEventListener('keydown', handleKeydown);
+  });
   const updater = (row, col) => {
     setHighlightIndex(row * GRIDSIZE + col);
   };
