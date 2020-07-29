@@ -100,6 +100,10 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
     height: 30,
     width: 30,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textTransform: 'uppercase',
   },
   highlighted: {
     backgroundColor: 'lightblue',
