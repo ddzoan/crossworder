@@ -4,9 +4,28 @@ import './App.css';
 
 const GRIDSIZE = 15;
 
+const initialCellState = () => [...Array(GRIDSIZE*GRIDSIZE)].map(() => ({letter: '', black: false}));
+
+const storage = {
+  get(key) {
+    return JSON.parse(localStorage.getItem(key));
+  },
+  set(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+};
+
 function App() {
-  const [cells, setCells] = useState([...Array(GRIDSIZE*GRIDSIZE)].map(() => ({letter: '', black: false})));
-  const [highlightIndex, setHighlightIndex] = useState(0);
+  const [cells, setCells] = useState(storage.get('cellData') || initialCellState());
+  const [highlightIndex, setHighlightIndex] = useState(storage.get('highlightIndex') || 0);
+  const updateHighlightIndex = newIndex => {
+    storage.set('highlightIndex', newIndex);
+    setHighlightIndex(newIndex);
+  };
+  const updateCells = cells => {
+    storage.set('cellData', cells);
+    setCells(cells);
+  };
   const rotationalSymmetry = true;
 
   useEffect(() => {
@@ -15,19 +34,19 @@ function App() {
       switch(event.key) {
         case "ArrowUp":
           if(Math.floor(highlightIndex / GRIDSIZE) > 0)
-            setHighlightIndex(highlightIndex - GRIDSIZE);
+            updateHighlightIndex(highlightIndex - GRIDSIZE);
           break;
         case "ArrowDown":
           if(Math.floor(highlightIndex / GRIDSIZE) < GRIDSIZE - 1)
-            setHighlightIndex(highlightIndex + GRIDSIZE);
+            updateHighlightIndex(highlightIndex + GRIDSIZE);
           break;
         case "ArrowLeft":
           if(highlightIndex % GRIDSIZE > 0)
-            setHighlightIndex(highlightIndex - 1);
+            updateHighlightIndex(highlightIndex - 1);
           break;
         case "ArrowRight":
           if(highlightIndex % GRIDSIZE < GRIDSIZE - 1)
-            setHighlightIndex(highlightIndex + 1);
+            updateHighlightIndex(highlightIndex + 1);
           break;
         case "a":
         case 'b':
@@ -55,13 +74,13 @@ function App() {
         case 'x':
         case 'y':
         case 'z':
-          if(event.ctrlKey) {
-            if(event.key === 'b')
-            {
+          if(event.ctrlKey || event.metaKey) {
+            if(event.key === 'b') {
               const black = !newCells[highlightIndex].black;
               newCells[highlightIndex] = {letter: '', black};
               if(rotationalSymmetry)
                 newCells[GRIDSIZE*GRIDSIZE - 1 - highlightIndex] = {letter: '', black};
+              event.preventDefault(); // stop firefox cmd b from opening bookmarks
             }
           } else {
             newCells[highlightIndex] = {letter: event.key, black: false};
@@ -73,13 +92,13 @@ function App() {
         default:
           break;
       }
-      setCells(newCells);
+      updateCells(newCells);
     };
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
   });
   const updater = (row, col) => {
-    setHighlightIndex(row * GRIDSIZE + col);
+    updateHighlightIndex(row * GRIDSIZE + col);
   };
   return (
     <div>
