@@ -20,6 +20,7 @@
     "predeploy": "yarn build",
     "deploy": "gh-pages -d build"
   },
+  "homepage": "https://www.dandzoan.com/crossworder",
   "eslintConfig": {
     "extends": "react-app"
   },
