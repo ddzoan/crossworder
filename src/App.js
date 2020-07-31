@@ -9,6 +9,7 @@ function App() {
   const [highlightIndex, setHighlightIndex] = useState(0);
   useEffect(() => {
     const handleKeydown = event => {
+      const newCells = [...cells];
       switch(event.key) {
         case "ArrowUp":
           if(Math.floor(highlightIndex / GRIDSIZE) > 0)
@@ -52,18 +53,20 @@ function App() {
         case 'x':
         case 'y':
         case 'z':
-          const newCells = [...cells];
           if(event.ctrlKey) {
             if(event.key === 'b')
               newCells[highlightIndex] = {letter: '', black: !newCells[highlightIndex].black};
           } else {
             newCells[highlightIndex] = {letter: event.key, black: false};
           }
-          setCells(newCells);
+          break;
+        case 'Backspace':
+          newCells[highlightIndex].letter = '';
           break;
         default:
           break;
       }
+      setCells(newCells);
     };
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
