@@ -7,6 +7,8 @@ const GRIDSIZE = 15;
 function App() {
   const [cells, setCells] = useState([...Array(GRIDSIZE*GRIDSIZE)].map(() => ({letter: '', black: false})));
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const rotationalSymmetry = true;
+
   useEffect(() => {
     const handleKeydown = event => {
       const newCells = [...cells];
@@ -56,9 +58,10 @@ function App() {
           if(event.ctrlKey) {
             if(event.key === 'b')
             {
-              const black = !newCells[highlightIndex].black
+              const black = !newCells[highlightIndex].black;
               newCells[highlightIndex] = {letter: '', black};
-              newCells[GRIDSIZE*GRIDSIZE - 1 - highlightIndex] = {letter: '', black};
+              if(rotationalSymmetry)
+                newCells[GRIDSIZE*GRIDSIZE - 1 - highlightIndex] = {letter: '', black};
             }
           } else {
             newCells[highlightIndex] = {letter: event.key, black: false};
