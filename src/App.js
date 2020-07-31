@@ -5,7 +5,7 @@ import './App.css';
 const GRIDSIZE = 15;
 
 function App() {
-  const [cells, setCells] = useState([...Array(GRIDSIZE*GRIDSIZE)].map((x, i) => ''));
+  const [cells, setCells] = useState([...Array(GRIDSIZE*GRIDSIZE)].map(() => ({letter: '', black: false})));
   const [highlightIndex, setHighlightIndex] = useState(0);
   useEffect(() => {
     const handleKeydown = event => {
@@ -53,8 +53,12 @@ function App() {
         case 'y':
         case 'z':
           const newCells = [...cells];
-          newCells[highlightIndex] = event.key;
-          console.log(newCells)
+          if(event.ctrlKey) {
+            if(event.key === 'b')
+              newCells[highlightIndex] = {letter: '', black: !newCells[highlightIndex].black};
+          } else {
+            newCells[highlightIndex] = {letter: event.key, black: false};
+          }
           setCells(newCells);
           break;
         default:
@@ -86,7 +90,7 @@ function Row({data, highlightedCell, onClick}) {
 
 function Cell({data, highlighted, onClick}) {
   return (
-    <div className={css(styles.cell, highlighted && styles.highlighted)} onClick={onClick}>{data}</div>
+    <div className={css(styles.cell, highlighted && styles.highlighted, data.black && styles.black)} onClick={onClick}>{data.letter}</div>
   );
 }
 
@@ -107,6 +111,9 @@ const styles = StyleSheet.create({
   },
   highlighted: {
     backgroundColor: 'lightblue',
+  },
+  black: {
+    backgroundColor: 'black',
   },
   cellInput: {
     border: 'none',
