@@ -55,7 +55,11 @@ function App() {
         case 'z':
           if(event.ctrlKey) {
             if(event.key === 'b')
-              newCells[highlightIndex] = {letter: '', black: !newCells[highlightIndex].black};
+            {
+              const black = !newCells[highlightIndex].black
+              newCells[highlightIndex] = {letter: '', black};
+              newCells[GRIDSIZE*GRIDSIZE - 1 - highlightIndex] = {letter: '', black};
+            }
           } else {
             newCells[highlightIndex] = {letter: event.key, black: false};
           }
