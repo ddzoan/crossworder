@@ -108,6 +108,7 @@ function App() {
           break;
         case 'Backspace':
           newCells[highlightIndex].letter = '';
+          event.preventDefault(); // stop backspace from navigating browser
           break;
         default:
           break;
