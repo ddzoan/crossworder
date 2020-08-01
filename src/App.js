@@ -4,7 +4,7 @@ import './App.css';
 
 const GRIDSIZE = 15;
 
-const initialCellState = () => [...Array(GRIDSIZE*GRIDSIZE)].map(() => ({letter: '', black: false}));
+const initialCellState = () => [...Array(GRIDSIZE*GRIDSIZE)].map(() => ({letter: '', black: false, clueNumber: null}));
 
 const storage = {
   get(key) {
@@ -15,6 +15,25 @@ const storage = {
   }
 };
 
+const leftEdge = index => index % GRIDSIZE === 0;
+const topEdge = index => index < GRIDSIZE;
+const leftBlack = (i, cells) => i - 1 > 0 && cells[i-1].black;
+const topBlack = (i, cells) => i - GRIDSIZE > 0 && cells[i-GRIDSIZE].black;
+
+const mutateCellsAddClueNum = cells => {
+  let clueNumber = 1;
+  for(let i = 0; i < cells.length; i++) {
+    if(!cells[i].black) {
+      if(leftEdge(i) || topEdge(i) || leftBlack(i, cells) || topBlack(i, cells)) {
+        cells[i].clueNumber = clueNumber++;
+      } else {
+        cells[i].clueNumber = null;
+      }
+    }
+  }
+  return cells;
+};
+
 function App() {
   const [cells, setCells] = useState(storage.get('cellData') || initialCellState());
   const [highlightIndex, setHighlightIndex] = useState(storage.get('highlightIndex') || 0);
@@ -23,6 +42,7 @@ function App() {
     setHighlightIndex(newIndex);
   };
   const updateCells = cells => {
+    mutateCellsAddClueNum(cells);
     storage.set('cellData', cells);
     setCells(cells);
   };
@@ -119,7 +139,10 @@ function Row({data, highlightedCell, onClick}) {
 
 function Cell({data, highlighted, onClick}) {
   return (
-    <div className={css(styles.cell, highlighted && styles.highlighted, data.black && styles.black)} onClick={onClick}>{data.letter}</div>
+    <div className={css(styles.cell, highlighted && styles.highlighted, data.black && styles.black)} onClick={onClick}>
+      {data.clueNumber && <span className={css(styles.clueNum)}>{data.clueNumber}</span>}
+      {data.letter}
+    </div>
   );
 }
 
@@ -137,12 +160,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     textTransform: 'uppercase',
+    position: 'relative',
   },
   highlighted: {
     backgroundColor: 'lightblue',
   },
   black: {
     backgroundColor: 'black',
+  },
+  clueNum: {
+    fontSize: 10,
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   cellInput: {
     border: 'none',
