@@ -124,6 +124,9 @@ function App() {
   return (
     <div>
       <div>
+        <h3>ctrl or cmd b to make a square black. It will retain rotational symmetry</h3>
+      </div>
+      <div>
         {[...Array(GRIDSIZE)].map((_, i) => <Row data={cells.slice(GRIDSIZE*i, GRIDSIZE*i + GRIDSIZE)} highlightedCell={Math.floor(highlightIndex / GRIDSIZE) === i ? highlightIndex % GRIDSIZE : -1} onClick={updater.bind(null, i)} key={i} />)}
       </div>
       <button type="button" onClick={() => updateCells(initialCellState())}>Reset Board</button>
